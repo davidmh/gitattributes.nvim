@@ -16,10 +16,15 @@ function M.setup(opts)
             end
 
             vim.schedule(function()
+                local attributes = utils.file_attributes(args.file)
+                if vim.tbl_isempty(attributes) then
+                    return
+                end
+
                 local data = {
                     path = args.file,
                     buffer = args.buf,
-                    attributes = utils.file_attributes(args.file),
+                    attributes = attributes,
                 }
                 local ok, _ = pcall(config.on_match, data)
                 if not ok then
