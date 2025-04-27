@@ -8,10 +8,16 @@ local LOG_PATH = vim.fn.stdpath("cache") .. "/gitattributes.log"
 ---@type table<string, table<number, GitAttributeExpression>>
 local GITATTRIBUTES_CACHE = {}
 
+--- Finds the nearest .git directory relative to the given path.
+---@param file_path string The current file path
+function M.find_git_root(file_path)
+    return vim.fs.root(vim.fs.dirname(file_path), { ".git" })
+end
+
 --- Find the nearest .gitattributes file relative to the given path.
 ---@param file_path string The current file path
 ---@return string? path The path to the folder containing the .gitattributes file
-function M.find_root(file_path)
+function M.find_gitattributes_root(file_path)
     return vim.fs.root(vim.fs.dirname(file_path), { ".gitattributes" })
 end
 
@@ -55,11 +61,21 @@ function M.get_prop_dictionary(gitattributes_path)
     return results
 end
 
+---@param pattern string The glob pattern to resolve
+---@param git_root string The path to the git root directory
+local function resolve_pattern(pattern, git_root)
+    if pattern:sub(1, 1) == "/" then
+        return vim.glob.to_lpeg(git_root .. pattern)
+    end
+    return vim.glob.to_lpeg(pattern)
+end
+
 --- Find the gitattributes associated with the current file.
 ---@param path string The current file path
+---@param git_root string The path to the git root directory
 ---@return GitAttributes attributes The list of gitattributes matching the file
-function M.file_attributes(path)
-    local gitattributes_root = M.find_root(path)
+function M.file_attributes(path, git_root)
+    local gitattributes_root = M.find_gitattributes_root(path)
     local attributes_dict = {}
 
     if not gitattributes_root then
@@ -76,8 +92,8 @@ function M.file_attributes(path)
     end
 
     for _, entry in ipairs(prop_dict) do
-        local pattern = vim.glob.to_lpeg(entry.pattern)
-        if pattern:match(relative_path) ~= nil then
+        local pattern = resolve_pattern(entry.pattern, git_root)
+        if pattern:match(relative_path) ~= nil or pattern:match(path) ~= nil then
             for _, attr in ipairs(entry.attributes) do
                 local parts = vim.split(attr, "=", { trimempty = true })
                 local attribute_name = table.remove(parts, 1)

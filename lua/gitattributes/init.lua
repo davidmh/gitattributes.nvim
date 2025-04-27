@@ -16,7 +16,11 @@ function M.setup(opts)
             end
 
             vim.schedule(function()
-                local attributes = utils.file_attributes(args.file)
+                local git_root = utils.find_git_root(args.file)
+                if not git_root then
+                    return
+                end
+                local attributes = utils.file_attributes(args.file, git_root)
                 if vim.tbl_isempty(attributes) then
                     return
                 end
