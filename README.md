@@ -1,6 +1,8 @@
 # gitattributes.nvim
 
-A Neovim plugin to detect properties defined in [gitattributes] files.
+A Neovim plugin to detect properties defined in [gitattributes] files,
+including the extended attributes used by the [Linguist overrides] for
+GitHub/GitLab.
 
 ## Installation
 
@@ -44,3 +46,4 @@ the [gitattributes] documentation, but all the attributes should be available
 at runtime.
 
 [gitattributes]: https://git-scm.com/docs/gitattributes
+[Linguist]: https://github.com/github-linguist/linguist/blob/main/docs/overrides.md
