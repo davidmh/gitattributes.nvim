@@ -46,4 +46,4 @@ the [gitattributes] documentation, but all the attributes should be available
 at runtime.
 
 [gitattributes]: https://git-scm.com/docs/gitattributes
-[Linguist]: https://github.com/github-linguist/linguist/blob/main/docs/overrides.md
+[Linguist overrides]: https://github.com/github-linguist/linguist/blob/main/docs/overrides.md
