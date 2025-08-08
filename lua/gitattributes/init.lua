@@ -1,46 +1,11 @@
-local config = require("gitattributes.config")
-local utils = require("gitattributes.utils")
-
 local M = {}
 
----@param opts GitAttributesConfig
-function M.setup(opts)
-    config.setup(opts or {})
-
-    local group = vim.api.nvim_create_augroup("gitattributes", { clear = true })
-    vim.api.nvim_create_autocmd("BufReadPost", {
-        group = group,
-        callback = function(args)
-            if vim.bo[args.buf].buftype ~= "" or args.file == "" then
-                return
-            end
-
-            vim.schedule(function()
-                local git_root = utils.find_git_root(args.file)
-                if not git_root then
-                    return
-                end
-                local attributes = utils.file_attributes(args.file, git_root)
-                if vim.tbl_isempty(attributes) then
-                    return
-                end
-
-                local data = {
-                    path = args.file,
-                    buffer = args.buf,
-                    attributes = attributes,
-                }
-                local ok, _ = pcall(config.on_match, data)
-                if not ok then
-                    vim.notify(
-                        "Error running on_match with params: " .. vim.inspect(data),
-                        vim.log.levels.ERROR,
-                        { title = "gitattributes.nvim" }
-                    )
-                end
-            end)
-        end,
-    })
+function M.setup()
+    vim.notify_once(
+        "No need to call setup, set vim.g.gitattributes_config instead",
+        vim.log.levels.INFO,
+        { title = "gitattributes.nvim" }
+    )
 end
 
 return M

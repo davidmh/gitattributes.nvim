@@ -1,5 +1,3 @@
-local config = require("gitattributes.config")
-
 local M = {}
 
 local LOG_PATH = vim.fn.stdpath("cache") .. "/gitattributes.log"
@@ -112,7 +110,7 @@ end
 ---@param label string
 ---@param message string?
 function M.log(label, message)
-    if config.debug then
+    if vim.g.gitattributes_config.debug then
         vim.schedule(function()
             local log_message = string.format("[%s] %s: %s", os.date("%Y-%m-%d %H:%M:%S"), label, message or "")
             local log_file = io.open(LOG_PATH, "a")
@@ -130,7 +128,7 @@ end
 ---@param action fun(): T The action to be timed
 ---@return T
 function M.time(label, action)
-    if config.debug then
+    if vim.g.gitattributes_config.debug then
         M.log(label .. " started")
         local start_time = vim.loop.hrtime()
         local result = action()

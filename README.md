@@ -9,10 +9,7 @@ GitHub/GitLab.
 Using lazy.nvim
 
 ```lua
-{
-  "davidmh/gitattributes.nvim",
-  opts = {}
-}
+{ "davidmh/gitattributes.nvim" }
 ```
 
 ## Default config
@@ -24,7 +21,7 @@ The default configuration covers the two use cases I found most useful:
 
 
 ```lua
-{
+vim.g.gitattributes_config = {
     ---@param data GitAttributesData
     on_match = function(data)
         if data.attributes["linguist-generated"] then
