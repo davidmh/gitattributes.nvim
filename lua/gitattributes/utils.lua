@@ -61,11 +61,15 @@ end
 
 ---@param pattern string The glob pattern to resolve
 ---@param git_root string The path to the git root directory
+---@return vim.lpeg.Pattern | nil
 local function resolve_pattern(pattern, git_root)
+    pattern = pattern:gsub("%[%[:space:%]%]", " ")
     if pattern:sub(1, 1) == "/" then
-        return vim.glob.to_lpeg(git_root .. pattern)
+        local ok, lpeg = pcall(vim.glob.to_lpeg, git_root .. pattern)
+        return ok and lpeg or nil
     end
-    return vim.glob.to_lpeg(pattern)
+    local ok, lpeg = pcall(vim.glob.to_lpeg, pattern)
+    return ok and lpeg or nil
 end
 
 --- Find the gitattributes associated with the current file.
@@ -91,7 +95,7 @@ function M.file_attributes(path, git_root)
 
     for _, entry in ipairs(prop_dict) do
         local pattern = resolve_pattern(entry.pattern, git_root)
-        if pattern:match(relative_path) ~= nil or pattern:match(path) ~= nil then
+        if pattern and (pattern:match(relative_path) ~= nil or pattern:match(path) ~= nil) then
             for _, attr in ipairs(entry.attributes) do
                 local parts = vim.split(attr, "=", { trimempty = true })
                 local attribute_name = table.remove(parts, 1)
